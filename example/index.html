@@ -12,10 +12,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="">
         <style>
+            html, body {
+                height: 100%;
+                background: #F8F0E5;
+            }
+
             div#test {
+                margin: 10%;
                 width: 80%;
-                height: 390px;
-                background: #f00;
+                height: 80%;
+                background: #DAC0A3;
             }
         </style>
     </head>
@@ -27,19 +33,27 @@
             //emojify().sayHi()
 
             const ej = emojify(document.getElementById('test'))
-            ej.border()
+            ej.border('🤖')
 
             setTimeout(() => {
-                ej.animateBorder()
+                ej.removeBorder()
             }, 2000)
 
-            /*setTimeout(() => {
+            setTimeout(() => {
                 ej.border()
             }, 4000)
 
             setTimeout(() => {
-                //ej.removeBorder()
-            }, 8000)*/
+                ej.animateBorder()
+            }, 6000)
+
+            setTimeout(() => {
+                ej.stopAnimatingBorder()
+            }, 8000)
+
+            setTimeout(() => {
+                ej.animateBorder()
+            }, 10000)
         </script>
     </body>
 </html>
