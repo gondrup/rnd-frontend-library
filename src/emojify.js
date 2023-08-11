@@ -8,7 +8,7 @@ module.exports = function emojify(el) {
     }
 
     let borderEmoji = null;
-    let topEms = rightEms = bottomEms = leftEms = []
+    let topEms, rightEms, bottomEms, leftEms
 
     function getNewEmEl() {
         let useBorderEmoji
@@ -30,7 +30,7 @@ module.exports = function emojify(el) {
     }
 
     function applyBorder() {
-        topEms = rightEms = bottomEms = leftEms = []
+        topEms = [], rightEms = [], bottomEms = [], leftEms = []
 
         let offLeft = offTop = 0
         if (el.style.position !== 'relative') {
@@ -92,6 +92,9 @@ module.exports = function emojify(el) {
 
             total += emH
         }
+
+        bottomEms.reverse()
+        leftEms.reverse()
     }
 
     let animateId = null
@@ -109,7 +112,7 @@ module.exports = function emojify(el) {
                 const allEms = [...topEms, ...rightEms, ...bottomEms, ...leftEms]
                 let lastContent = allEms[allEms.length - 1].innerText
                 let tmp
-                for (let i = 0; i < allEms.length - 1; i++) {
+                for (let i = 0; i < allEms.length; i++) {
                     tmp = allEms[i].innerText
                     allEms[i].innerText = lastContent
                     lastContent = tmp
