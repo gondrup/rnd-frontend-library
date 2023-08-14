@@ -19,6 +19,8 @@ module.exports = function emojify(el) {
     let borderEmoji = null;
     let topEms, rightEms, bottomEms, leftEms
 
+    let currentAnimation = null
+
     function getNewEmEl() {
         let useBorderEmoji
         if (borderEmoji === null) {
@@ -51,56 +53,50 @@ module.exports = function emojify(el) {
         const elW = el.clientWidth
         const elH = el.clientHeight
         
-        let total
-        let emH = emW = null
+        let total, maxCntH, maxCntV, spacingH, spacingV
+        let emH = null, emW = null
 
         total = 0
-        while (total < elW) {  
+        do {  
             const emTopEl = getNewEmEl()
             topEms.push(emTopEl)
             el.appendChild(emTopEl)
             if (emH === null) {
                 emH = emTopEl.clientHeight
                 emW = emTopEl.clientWidth
+                maxCntH = (elW / emW)
+                spacingH = elW / Math.floor(maxCntH)
+                maxCntV = (elH / emH)
+                spacingV = elH / Math.floor(maxCntV)
             }
-            emTopEl.style.left = `${offLeft + Math.round(total)}px`
+            emTopEl.style.left = `${offLeft + Math.round(total * spacingH)}px`
             emTopEl.style.top = `${offTop + 0}px`
 
             const emBottomEl = getNewEmEl()
             bottomEms.push(emBottomEl)
             el.appendChild(emBottomEl)
-            emBottomEl.style.left = `${offLeft + Math.round(total)}px`
+            emBottomEl.style.left = `${offLeft + Math.round(total * spacingH)}px`
             emBottomEl.style.top = `${offTop + elH - emH}px`
 
-            if (total + emW > elW) {
-                const w = (total + emW) - elW
-                emTopEl.style.width = emBottomEl.style.width = `${w}px`
-            }
+            total++
+        } while (total < maxCntH - 1)
 
-            total += emW
-        }
-
-        total = emH
-        while (total < (elH - (emH * 2))) {  
+        total = 1
+        do {  
             const emLeftEl = getNewEmEl()
             leftEms.push(emLeftEl)
             el.appendChild(emLeftEl)
             emLeftEl.style.left = `${offLeft + 0}px`
-            emLeftEl.style.top = `${offTop + Math.round(total)}px`
+            emLeftEl.style.top = `${offTop + Math.round(total * spacingV)}px`
 
             const emRightEl = getNewEmEl()
             rightEms.push(emRightEl)
             el.appendChild(emRightEl)
             emRightEl.style.left = `${offLeft + elW - emW}px`
-            emRightEl.style.top = `${offTop + Math.round(total)}px`
+            emRightEl.style.top = `${offTop + Math.round(total * spacingV)}px`
 
-            if (total + emH > elH) {
-                const h = (total + emH) - elH
-                emTopEl.style.height = emBottomEl.style.height = `${h}px`
-            }
-
-            total += emH
-        }
+            total ++
+        } while (total < maxCntV - 2)
 
         bottomEms.reverse()
         leftEms.reverse()
@@ -140,15 +136,18 @@ module.exports = function emojify(el) {
         const allEms = [...topEms, ...rightEms, ...bottomEms, ...leftEms]
         if (reverse) {
             allEms.reverse()
+            currentAnimation = 'rotateReverse'
+        } else {
+            currentAnimation = 'rotate'
         }
-
         swapAnimation(allEms)
     }
 
-    function randomSwapAnimation(reverse = false) {
+    function randomSwapAnimation() {
         const allEms = [...topEms, ...rightEms, ...bottomEms, ...leftEms]
         shuffleArray(allEms)
 
+        currentAnimation = 'randomSwap'
         swapAnimation(allEms)
     }
 
@@ -177,6 +176,7 @@ module.exports = function emojify(el) {
             animateId = window.requestAnimationFrame(animateLoop);
         }
 
+        currentAnimation = 'blink'
         animateId = window.requestAnimationFrame(animateLoop);
     }
 
@@ -184,6 +184,7 @@ module.exports = function emojify(el) {
         if (animateId !== null) {
             window.cancelAnimationFrame(animateId)
             animateId = null
+            currentAnimation = null
         }
     }
 
@@ -198,15 +199,28 @@ module.exports = function emojify(el) {
 
     function onWindowResize() {
         let restartAnimation = false
-        if (animateId !== null) {
-            restartAnimation = true
+        if (animateId !== null && currentAnimation !== null) {
+            restartAnimation = currentAnimation
         }
         stopAnimation()
         removeBorder()
         applyBorder()
 
         if (restartAnimation) {
-            rotateAnimation()
+            switch (restartAnimation) {
+                case 'rotate':
+                    rotateAnimation()
+                    break
+                case 'rotateReverse':
+                    rotateAnimation(true)
+                    break
+                case 'randomSwap':
+                    randomSwapAnimation()
+                    break
+                case 'blink':
+                    blinkAnimation()
+                    break
+            }
         }
     }
 
