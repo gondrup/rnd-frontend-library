@@ -30,8 +30,6 @@
 
         <script src="../dist/emojify.js"></script>
         <script>
-            //emojify().sayHi()
-
             const ej = emojify(document.getElementById('test'))
             ej.border('🤖')
 
@@ -54,6 +52,10 @@
             setTimeout(() => {
                 ej.animateBorder()
             }, 10000)
+
+            setTimeout(() => {
+                ej.reverseAnimatedBorder()
+            }, 13000)
         </script>
     </body>
 </html>

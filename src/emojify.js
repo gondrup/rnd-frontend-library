@@ -98,7 +98,7 @@ module.exports = function emojify(el) {
     }
 
     let animateId = null
-    function animate() {
+    function animate(reverse = false) {
         const timeBetweenFrames = 1000 / 10; // 10 updates per second
         let lastRender
 
@@ -110,6 +110,9 @@ module.exports = function emojify(el) {
     
             if (renderElapsed > timeBetweenFrames) {
                 const allEms = [...topEms, ...rightEms, ...bottomEms, ...leftEms]
+                if (reverse) {
+                    allEms.reverse()
+                }
                 let lastContent = allEms[allEms.length - 1].innerText
                 let tmp
                 for (let i = 0; i < allEms.length; i++) {
@@ -174,7 +177,13 @@ module.exports = function emojify(el) {
     }
 
     e.animateBorder = function() {
+        stopAnimation()
         animate()
+    }
+
+    e.reverseAnimatedBorder = function() {
+        stopAnimation()
+        animate(true)
     }
 
     e.stopAnimatingBorder = function() {
